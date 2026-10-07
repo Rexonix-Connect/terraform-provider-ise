@@ -136,7 +136,10 @@ func (r *DeviceAdminAuthenticationRuleUpdateRanksResource) Create(ctx context.Co
 		return rules[i].Rank.ValueInt64() < rules[j].Rank.ValueInt64()
 	})
 	for _, rule := range rules {
-		res, err := r.client.Get(plan.getPath() + "/" + url.QueryEscape(rule.Id.ValueString()))
+		// Start from empty data for each rule: fromBody keeps values that are
+		// missing in a response, e.g. the condition children of the previous rule.
+		existingData = DeviceAdminAuthenticationRule{}
+		res, err := r.client.Get(plan.getPath() + "/" + url.PathEscape(rule.Id.ValueString()))
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s", err))
 			return
@@ -148,7 +151,7 @@ func (r *DeviceAdminAuthenticationRuleUpdateRanksResource) Create(ctx context.Co
 
 		// Update rank
 		body, _ = sjson.Set(body, "rule.rank", rule.Rank.ValueInt64())
-		res, err = r.client.Put(plan.getPath()+"/"+url.QueryEscape(rule.Id.ValueString()), body)
+		res, err = r.client.Put(plan.getPath()+"/"+url.PathEscape(rule.Id.ValueString()), body)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (PUT), got error: %s, %s", err, res.String()))
 			return
@@ -225,7 +228,10 @@ func (r *DeviceAdminAuthenticationRuleUpdateRanksResource) Update(ctx context.Co
 		return rules[i].Rank.ValueInt64() < rules[j].Rank.ValueInt64()
 	})
 	for _, rule := range rules {
-		res, err := r.client.Get(plan.getPath() + "/" + url.QueryEscape(rule.Id.ValueString()))
+		// Start from empty data for each rule: fromBody keeps values that are
+		// missing in a response, e.g. the condition children of the previous rule.
+		existingData = DeviceAdminAuthenticationRule{}
+		res, err := r.client.Get(plan.getPath() + "/" + url.PathEscape(rule.Id.ValueString()))
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to retrieve object (GET), got error: %s", err))
 			return
@@ -237,7 +243,7 @@ func (r *DeviceAdminAuthenticationRuleUpdateRanksResource) Update(ctx context.Co
 
 		// Update rank
 		body, _ = sjson.Set(body, "rule.rank", rule.Rank.ValueInt64())
-		res, err = r.client.Put(plan.getPath()+"/"+url.QueryEscape(rule.Id.ValueString()), body)
+		res, err = r.client.Put(plan.getPath()+"/"+url.PathEscape(rule.Id.ValueString()), body)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Failed to configure object (PUT), got error: %s, %s", err, res.String()))
 			return
